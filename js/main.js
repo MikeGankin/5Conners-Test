@@ -527,18 +527,11 @@ __webpack_require__.r(__webpack_exports__);
       center: center,
       zoom: 13
     });
-    // let placemark = new ymaps.Placemark(center, {}, {
-    //   iconLayout: 'default#image',
-    //   iconImageHref: '../img/custom-pin.svg',
-    //   iconImageSize: [27, 40],
-    //   iconImageOffset: [-10, -40]
-    // })
-
     let placemark = new ymaps.Placemark(center, {}, {
       iconLayout: 'default#image',
-      iconImageHref: 'https://www.svgrepo.com/show/362123/map-marker.svg',
-      iconImageSize: [40, 40],
-      iconImageOffset: [-19, -44]
+      iconImageHref: '../../img/custom-pin.svg',
+      iconImageSize: [27, 40],
+      iconImageOffset: [-10, -40]
     });
     map.controls.remove('geolocationControl'); // удаляем геолокацию
     map.controls.remove('searchControl'); // удаляем поиск
