@@ -475,26 +475,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 (function () {
-  // Меняем положение карты в DOM
-  const placeChanger = () => {
-    let map = document.querySelector('#map');
-    let mapClone = map.cloneNode(true);
-    let fragment = document.createDocumentFragment();
-    fragment.appendChild(mapClone);
-    if ((0,_functions_check_viewport__WEBPACK_IMPORTED_MODULE_0__.isTablet)()) {
-      map.remove();
-      let newPlace = document.querySelector('.form__fieldset--contact');
-      newPlace.appendChild(fragment);
-    }
-    if ((0,_functions_check_viewport__WEBPACK_IMPORTED_MODULE_0__.isDesktop)()) {
-      map.remove();
-      let oldPlace = document.querySelector('.main__wrapper');
-      oldPlace.appendChild(fragment);
-    }
-  };
-  placeChanger();
-  window.addEventListener('resize', (0,_functions_throttle__WEBPACK_IMPORTED_MODULE_1__.throttle)(placeChanger, 50));
-
   // Yandex & DaData
   const token = "29e80efd31d998cef429cad2ce20f8d52eded84a";
   const geolocate = (lat, long) => {
@@ -527,7 +507,17 @@ __webpack_require__.r(__webpack_exports__);
       center: center,
       zoom: 13
     });
+    let mapMobile = new ymaps.Map('map-mobile', {
+      center: center,
+      zoom: 13
+    });
     let placemark = new ymaps.Placemark(center, {}, {
+      iconLayout: 'default#image',
+      iconImageHref: 'img/custom-pin.svg',
+      iconImageSize: [27, 40],
+      iconImageOffset: [-10, -40]
+    });
+    let placemarkMobile = new ymaps.Placemark(center, {}, {
       iconLayout: 'default#image',
       iconImageHref: 'img/custom-pin.svg',
       iconImageSize: [27, 40],
@@ -540,34 +530,23 @@ __webpack_require__.r(__webpack_exports__);
     map.controls.remove('fullscreenControl'); // удаляем кнопку перехода в полноэкранный режим
     map.controls.remove('zoomControl'); // удаляем контрол зуммирования
     map.controls.remove('rulerControl'); // удаляем контрол правил
-    // map.behaviors.disable(['scrollZoom']); // отключаем скролл карты (опционально)
     // Изменим размеры контейнера карты
     map.container.getElement().style.width = '100%';
     // Инициируем пересчет размеров
     map.container.fitToViewport();
     map.geoObjects.add(placemark);
-
-    // Показываем точку на карте по адресу (прямое геокодирование)
-    const showOn = suggestion => {
-      var hasHouseCoords = suggestion.data.qc_geo === "0" || suggestion.data.qc_geo === "1";
-      if (hasHouseCoords) {
-        showHouse(suggestion);
-      }
-    };
-    function showHouse(suggestion) {
-      let lat = suggestion.data.geo_lat;
-      let long = suggestion.data.geo_lon;
-      let cords = [];
-      cords.push(lat, long);
-      placemark.geometry.setCoordinates(cords);
-      map.setCenter(cords);
-      map.setZoom(17);
-    }
-    $("#address").suggestions({
-      token: token,
-      type: "ADDRESS",
-      onSelect: showOn
-    });
+    mapMobile.controls.remove('geolocationControl'); // удаляем геолокацию
+    mapMobile.controls.remove('searchControl'); // удаляем поиск
+    mapMobile.controls.remove('trafficControl'); // удаляем контроль трафика
+    mapMobile.controls.remove('typeSelector'); // удаляем тип
+    mapMobile.controls.remove('fullscreenControl'); // удаляем кнопку перехода в полноэкранный режим
+    mapMobile.controls.remove('zoomControl'); // удаляем контрол зуммирования
+    mapMobile.controls.remove('rulerControl'); // удаляем контрол правил
+    // Изменим размеры контейнера карты
+    mapMobile.container.getElement().style.width = '100%';
+    // Инициируем пересчет размеров
+    mapMobile.container.fitToViewport();
+    mapMobile.geoObjects.add(placemarkMobile);
 
     // Определяем адрес по координатам для обратного геокодирования
     function getAddress(coords) {
@@ -586,13 +565,41 @@ __webpack_require__.r(__webpack_exports__);
         });
       });
     }
-    map.events.add('click', function (e) {
+    function getCords(e) {
       let coords = e.get('coords');
-      if (placemark) {
+      if (placemark && placemarkMobile) {
         placemark.geometry.setCoordinates(coords);
+        placemarkMobile.geometry.setCoordinates(coords);
       }
       getAddress(coords);
       geolocate(coords[0], coords[1]);
+    }
+    map.events.add('click', getCords);
+    mapMobile.events.add('click', getCords);
+
+    // Показываем точку на карте по адресу (прямое геокодирование)
+    const showOn = suggestion => {
+      var hasHouseCoords = suggestion.data.qc_geo === "0" || suggestion.data.qc_geo === "1";
+      if (hasHouseCoords) {
+        showHouse(suggestion);
+      }
+    };
+    function showHouse(suggestion) {
+      let lat = suggestion.data.geo_lat;
+      let long = suggestion.data.geo_lon;
+      let coords = [];
+      coords.push(lat, long);
+      placemark.geometry.setCoordinates(coords);
+      placemarkMobile.geometry.setCoordinates(coords);
+      map.setCenter(coords);
+      map.setZoom(17);
+      mapMobile.setCenter(coords);
+      mapMobile.setZoom(17);
+    }
+    $("#address").suggestions({
+      token: token,
+      type: "ADDRESS",
+      onSelect: showOn
     });
   }
   ymaps.ready(init);
