@@ -89,14 +89,6 @@ svg {
   pointer-events: none;
 }
 
-.site-container {
-  overflow: hidden;
-}
-
-.is-hidden {
-  display: none !important; /* stylelint-disable-line declaration-no-important */
-}
-
 .reset-btn {
   border: none;
   padding: 0;
@@ -173,7 +165,6 @@ svg {
 }
 
 .dis-scroll {
-  position: fixed;
   left: 0;
   top: 0;
   overflow: hidden;
@@ -274,11 +265,11 @@ svg {
   -webkit-transform: translateY(50px);
   -ms-transform: translateY(50px);
   transform: translateY(50px);
-  -webkit-transition: opacity, var(--transition), -webkit-transform;
-  transition: opacity, var(--transition), -webkit-transform;
-  -o-transition: opacity, transform, var(--transition);
-  transition: opacity, transform, var(--transition);
-  transition: opacity, transform, var(--transition), -webkit-transform;
+  -webkit-transition: opacity var(--transition), -webkit-transform var(--transition);
+  transition: opacity var(--transition), -webkit-transform var(--transition);
+  -o-transition: opacity var(--transition), transform var(--transition);
+  transition: opacity var(--transition), transform var(--transition);
+  transition: opacity var(--transition), transform var(--transition), -webkit-transform var(--transition);
 }
 .scroll-up svg {
   display: block;
@@ -1283,9 +1274,9 @@ svg {
   font-size: 12px;
   line-height: 15px;
   color: var(--black);
-  -webkit-transition: background-color, color, var(--transition);
-  -o-transition: background-color, color, var(--transition);
-  transition: background-color, color, var(--transition);
+  -webkit-transition: background-color var(--transition), color var(--transition);
+  -o-transition: background-color var(--transition), color var(--transition);
+  transition: background-color var(--transition), color var(--transition);
 }
 
 .size__input:hover + .size__checkbox {
@@ -1340,9 +1331,9 @@ svg {
   border-radius: 100%;
   opacity: 0;
   visibility: hidden;
-  -webkit-transition: border-color, visibility, opacity, var(--transition);
-  -o-transition: border-color, visibility, opacity, var(--transition);
-  transition: border-color, visibility, opacity, var(--transition);
+  -webkit-transition: border-color var(--transition), visibility var(--transition), opacity var(--transition);
+  -o-transition: border-color var(--transition), visibility var(--transition), opacity var(--transition);
+  transition: border-color var(--transition), visibility var(--transition), opacity var(--transition);
 }
 
 .color__radio--blue {

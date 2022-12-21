@@ -432,9 +432,9 @@ let menuAnimation = gsap__WEBPACK_IMPORTED_MODULE_4__["default"].timeline();
 
 // Функция анимации header при скролле
 (function () {
+  const header = document.querySelector('.header');
   let lastScroll = 0;
   const headerHider = () => {
-    let header = document.querySelector('.header');
     if (window.scrollY > lastScroll && window.scrollY > 100) {
       header.classList.add("hidden-header");
     } else {
@@ -442,8 +442,10 @@ let menuAnimation = gsap__WEBPACK_IMPORTED_MODULE_4__["default"].timeline();
     }
     lastScroll = window.scrollY;
   };
-  window.addEventListener("scroll", () => {
-    (0,_functions_throttle__WEBPACK_IMPORTED_MODULE_0__.throttle)(headerHider(), 50);
+  document.addEventListener("scroll", () => {
+    if (!header.classList.contains('dis-scroll')) {
+      (0,_functions_throttle__WEBPACK_IMPORTED_MODULE_0__.throttle)(headerHider(), 50);
+    }
   });
 })();
 
