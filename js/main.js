@@ -11,6 +11,7 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_header__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/header */ "./src/js/components/header.js");
 /* harmony import */ var _components_map__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/map */ "./src/js/components/map.js");
+/* harmony import */ var _components_map__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_components_map__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _components_chart__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/chart */ "./src/js/components/chart.js");
 /* harmony import */ var _components_form__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/form */ "./src/js/components/form.js");
 /* harmony import */ var _components_subscribe__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/subscribe */ "./src/js/components/subscribe.js");
@@ -466,13 +467,7 @@ let menuAnimation = gsap__WEBPACK_IMPORTED_MODULE_4__["default"].timeline();
 /*!**********************************!*\
   !*** ./src/js/components/map.js ***!
   \**********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _functions_check_viewport__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../functions/check-viewport */ "./src/js/functions/check-viewport.js");
-/* harmony import */ var _functions_throttle__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../functions/throttle */ "./src/js/functions/throttle.js");
-
+/***/ (() => {
 
 (function () {
   // Yandex & DaData
@@ -708,40 +703,6 @@ __webpack_require__.r(__webpack_exports__);
   const inputDebounced = (0,_functions_debouce__WEBPACK_IMPORTED_MODULE_2__.debounce)(inputValueСatcher, 200);
   input.addEventListener('input', inputDebounced);
 })();
-
-/***/ }),
-
-/***/ "./src/js/functions/check-viewport.js":
-/*!********************************************!*\
-  !*** ./src/js/functions/check-viewport.js ***!
-  \********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "isDesktop": () => (/* binding */ isDesktop),
-/* harmony export */   "isMobile": () => (/* binding */ isMobile),
-/* harmony export */   "isTablet": () => (/* binding */ isTablet)
-/* harmony export */ });
-const isMobile = () => {
-  if (window.innerWidth < 768) {
-    return true;
-  }
-  return false;
-};
-const isTablet = () => {
-  if (window.innerWidth < 1200) {
-    return true;
-  }
-  return false;
-};
-const isDesktop = () => {
-  if (window.innerWidth > 1200) {
-    return true;
-  }
-  return false;
-};
 
 /***/ }),
 

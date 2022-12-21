@@ -2022,12 +2022,14 @@ svg {
   -ms-grid-row: 2;
   grid-row: 2;
   margin-top: -40px;
+  display: block;
 }
 @media (max-width: 1200px) {
   .map-wrapper {
     margin-top: 16px;
     width: 100%;
     height: calc(220px + 230 * ((100vw - 320px) / 1600));
+    display: none;
   }
 }
 @media (max-width: 1024px) {
