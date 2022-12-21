@@ -1649,7 +1649,8 @@ svg {
 .payment__radio::after {
   content: "";
   position: absolute;
-  display: none;
+  visibility: hidden;
+  opacity: 0;
   top: 50%;
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
@@ -1659,10 +1660,9 @@ svg {
   border-radius: 100%;
   width: 12px;
   height: 12px;
-}
-
-.payment__input:checked + .payment__radio::after {
-  display: block;
+  -webkit-transition: opacity var(--transition), visibility var(--transition);
+  -o-transition: opacity var(--transition), visibility var(--transition);
+  transition: opacity var(--transition), visibility var(--transition);
 }
 
 .form__textarea {
@@ -1710,6 +1710,11 @@ svg {
   .comment__symbol-counter {
     padding-left: 17px;
   }
+}
+
+.payment__input:checked + .payment__radio::after {
+  visibility: visible;
+  opacity: 1;
 }
 
 .is-input-invalid {
@@ -1965,6 +1970,7 @@ svg {
   height: 51px;
   border: 1px solid var(--middle-grey);
   padding: 15px 20px;
+  border-radius: 0;
 }
 @media (max-width: 576px) {
   .total__input {
