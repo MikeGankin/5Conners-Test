@@ -227,6 +227,7 @@ smoothscroll_polyfill__WEBPACK_IMPORTED_MODULE_3___default().polyfill();
   };
   formTextareaComment.addEventListener('input', onInput);
   const formValidator = () => {
+    const contact = document.querySelector('.contact');
     const red = document.querySelector(':root').style.getPropertyValue('--red');
     const green = document.querySelector(':root').style.getPropertyValue('--green');
     const form = document.querySelector('#form');
@@ -281,7 +282,7 @@ smoothscroll_polyfill__WEBPACK_IMPORTED_MODULE_3___default().polyfill();
       value: 142,
       errorMessage: 'Вы привысили лимит символов!'
     }]).onFail(() => {
-      form.scrollIntoView({
+      contact.scrollIntoView({
         behavior: "smooth",
         block: "start",
         inline: "start"
@@ -529,7 +530,7 @@ __webpack_require__.r(__webpack_exports__);
     });
     let placemark = new ymaps.Placemark(center, {}, {
       iconLayout: 'default#image',
-      iconImageHref: '../img/pin.svg',
+      iconImageHref: '../img/custom-pin.png',
       iconImageSize: [40, 40],
       iconImageOffset: [-10, -44]
     });
