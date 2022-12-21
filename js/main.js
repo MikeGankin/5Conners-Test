@@ -529,7 +529,7 @@ __webpack_require__.r(__webpack_exports__);
     });
     let placemark = new ymaps.Placemark(center, {}, {
       iconLayout: 'default#image',
-      iconImageHref: '../img/custom-pin.svg',
+      iconImageHref: 'img/custom-pin.svg',
       iconImageSize: [27, 40],
       iconImageOffset: [-10, -40]
     });
