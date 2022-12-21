@@ -2022,7 +2022,6 @@ svg {
   -ms-grid-row: 2;
   grid-row: 2;
   margin-top: -40px;
-  display: block;
 }
 @media (max-width: 1200px) {
   .map-wrapper {
