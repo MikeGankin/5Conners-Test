@@ -664,14 +664,14 @@ svg {
   transform: translate(-50%, -50%);
 }
 
-.burger:hover .burger__closed > .burger__line {
-  background-color: var(--pepels-grey);
+@media (hover: hover) {
+  .burger:hover .burger__closed > .burger__line {
+    background-color: var(--pepels-grey);
+  }
+  .burger:hover .cross > .cross__line {
+    background-color: var(--pepels-grey);
+  }
 }
-
-.burger:hover .cross > .cross__line {
-  background-color: var(--pepels-grey);
-}
-
 .menu {
   position: fixed;
   top: var(--header-height-bobile);
@@ -1686,6 +1686,7 @@ svg {
   height: calc(121px + 20 * ((100vw - 320px) / 1600));
   margin-bottom: 5px;
   overflow: hidden;
+  border-radius: 0;
 }
 @media (max-width: 576px) {
   .form__textarea {
@@ -2156,6 +2157,7 @@ svg {
   border: 1px solid #C8C8C8;
   padding: 15px 20px;
   width: 100%;
+  border-radius: 0;
 }
 @media (max-width: 576px) {
   .footer-form__input {
