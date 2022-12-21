@@ -530,9 +530,9 @@ __webpack_require__.r(__webpack_exports__);
     });
     let placemark = new ymaps.Placemark(center, {}, {
       iconLayout: 'default#image',
-      iconImageHref: '../img/custom-pin.png',
-      iconImageSize: [40, 40],
-      iconImageOffset: [-10, -44]
+      iconImageHref: '../img/custom-pin.svg',
+      iconImageSize: [27, 40],
+      iconImageOffset: [-10, -40]
     });
     map.controls.remove('geolocationControl'); // удаляем геолокацию
     map.controls.remove('searchControl'); // удаляем поиск
