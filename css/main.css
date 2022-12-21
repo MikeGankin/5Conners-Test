@@ -48,29 +48,25 @@
   font-display: swap;
   font-style: normal;
 }
-html {
+*,
+*::before,
+*::after {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
 
-*,
-*::before,
-*::after {
-  -webkit-box-sizing: inherit;
-  box-sizing: inherit;
-}
-
-.page {
+html {
   height: 100%;
   font-family: var(--font-family, sans-serif);
   -webkit-text-size-adjust: 100%;
 }
 
-.page__body {
+body {
   margin: 0;
   min-width: 320px;
   min-height: 100%;
   font-size: 16px;
+  scroll-behavior: smooth;
 }
 
 img {
