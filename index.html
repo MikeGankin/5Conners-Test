@@ -23,7 +23,7 @@
 
 <body class="page__body">
   <div class="site-container">
-    <header class="header fixed-block">
+    <header class="header fixed-block" data-scroll-lock-fill-gap>
   <div class="container">
     <div class="header__content">
       <nav class="header__nav header-links">
@@ -308,11 +308,14 @@
         <input class="input-reset form__input form__input--mail" type="email" name="Email" placeholder="Email">
       </label>
       <label class="form__label form__label--address">
-        <textarea class="form__textarea form__textarea--address" id="address" name="Адрес доставки" placeholder="Адрес доставки" cols="30" rows="10"></textarea>
+        <textarea class="form__textarea form__textarea--address" id="address" name="Адрес доставки" placeholder="Адрес доставки"></textarea>
         <span class="field-name">Адрес доставки</span>
       </label>
     </div>
     <div class="map-wrapper map-wrapper-mobile">
+      <div class="plug">
+        <p>Для отображения карты пожалуйста обновите страницу или проверьте интернет соединение!</p>
+      </div>
       <div class="map" id="map-mobile">
     </div>
     </div>
@@ -340,13 +343,16 @@
     <textarea class="form__textarea form__textarea--comment" name="Комментарий к заказу" placeholder="Комментарий к заказу" rows="2"></textarea>
     <span class="comment__symbol-counter">Использовано 0/142 символов</span>
   </fieldset>
-
 </form>
 
           </div>
         </section>
         <section class="section total">
           <h2 class="total__title visually-hidden">Итоговая стоимость</h2>
+          <div class="total__plug plug hidden">
+            <p>В корзине нет ни одного товара!</p>
+            <button class="reset-btn site-btn-fill" type="button">В каталог</button>
+          </div>
           <div class="total__content">
   <div class="total__goods goods">
     <span class="goods__field">Товары</span>
@@ -392,7 +398,10 @@
 
         </section>
         <div class="map-wrapper">
-          <div class="map" id="map">
+          <div class="plug">
+            <p>Для отображения карты пожалуйста обновите страницу или проверьте интернет соединение!</p>
+          </div>
+          <div class="map" id="map"></div>
         </div>
       </div>
     </main>
