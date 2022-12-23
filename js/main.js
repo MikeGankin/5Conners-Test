@@ -59,47 +59,54 @@ const ACTIONS = {
   PLUS: 'plus',
   MINUS: 'minus'
 };
+// Ставим визуальный пробел в строке
 const formatNumber = x => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+// Генерируем заглушку при пустой корзине
 const plugSwitcher = () => {
-  let cards = [...document.querySelectorAll('[data-card]')];
-  let plug = document.querySelector('.total__plug');
-  if (Array.isArray(cards) && cards.length) {
-    plug.classList.add('hidden');
-  } else {
-    plug.classList.remove('hidden');
-  }
+  const cards = [...document.querySelectorAll('[data-card]')],
+    plug = document.querySelector('.total__plug');
+  Array.isArray(cards) && cards.length ? plug.classList.add('hidden') : plug.classList.remove('hidden');
 };
 plugSwitcher();
-const valueCatcher = totalCost => {
-  let values = [...document.querySelectorAll('.counter__number')];
+
+// Заполняем поля количества товаров
+const quantityOfGoodsValueSetter = (sum, totalCostToNumber) => {
+  const orderDescription = document.querySelector('.order__description'),
+    chartCounter = document.querySelector('.chart__counter');
+  if (totalCostToNumber !== undefined) {
+    orderDescription.textContent = `${sum} товара на сумму ${totalCostToNumber} ₽`;
+    chartCounter.textContent = sum;
+  }
+};
+
+// Считаем количество единиц товара в корзине
+const quantityOfGoodsValueCalculate = totalCostToNumber => {
+  const values = [...document.querySelectorAll('.counter__number')];
   let numbers = [];
   values.forEach(child => {
     numbers.push(Number(child.textContent));
   });
   let sum = numbers.reduce((partialSum, a) => partialSum + a, 0);
-  let orderDescription = document.querySelector('.order__description');
-  if (totalCost) {
-    orderDescription.textContent = `${sum} товара на сумму ${totalCost} ₽`;
-  }
-  let chartCounter = document.querySelector('.chart__counter');
-  chartCounter.textContent = sum;
+  quantityOfGoodsValueSetter(sum, totalCostToNumber);
 };
-valueCatcher();
-const calculateCost = () => {
+
+// Счетаем финальную стоимость заказа с учетом скидок, акций, доставки
+const calculateFinalCost = () => {
   let totalCost = 0;
   let pricePerUnit = 0;
   let discountPerUnit = 0;
-  let cartItems = [...document.querySelectorAll('[data-card]')];
-  const goodsValue = document.querySelector('.goods__value');
-  const finalPriceValue = document.querySelector('.final-price__value');
-  const discount = document.querySelector('.discount');
-  const promo = document.querySelector('.promo');
-  const code = document.querySelector('.code');
+  const cartItems = [...document.querySelectorAll('[data-card]')],
+    goodsValue = document.querySelector('.goods__value'),
+    finalPriceValue = document.querySelector('.final-price__value'),
+    discount = document.querySelector('.discount'),
+    promo = document.querySelector('.promo'),
+    code = document.querySelector('.code');
   cartItems.forEach(item => {
-    let dataPrice = item.querySelector('[data-base-price]').getAttribute('data-base-price');
-    let quantity = item.querySelector('.counter__number').textContent;
-    let newPriceBase = item.querySelector('.new-price__base');
-    let newPriceDiscount = item.querySelector('.new-price__discount');
+    let dataPrice = item.querySelector('[data-base-price]').getAttribute('data-base-price'),
+      quantity = item.querySelector('.counter__number').textContent,
+      newPriceBase = item.querySelector('.new-price__base'),
+      newPriceDiscount = item.querySelector('.new-price__discount');
     totalCost = totalCost + Number(dataPrice) * Number(quantity);
     pricePerUnit = Number(dataPrice) * Number(quantity);
     newPriceBase.textContent = `${formatNumber(pricePerUnit)} ₽`;
@@ -111,28 +118,31 @@ const calculateCost = () => {
   });
   goodsValue.textContent = `${formatNumber(totalCost)} ₽`;
   if (cartItems && totalCost >= 9000) {
-    let priceAfterPromo = totalCost - 9000 + 200;
+    const priceAfterPromo = totalCost - 9000 + 200;
     finalPriceValue.textContent = `${formatNumber(priceAfterPromo)} ₽`;
   } else {
-    let priceWithDelivery = totalCost + 200;
+    const priceWithDelivery = totalCost + 200;
     finalPriceValue.textContent = `${formatNumber(priceWithDelivery)} ₽`;
     discount.classList.add('hidden');
     promo.classList.add('hidden');
     code.classList.add('hidden');
   }
-  valueCatcher(formatNumber(totalCost));
+  let totalCostToNumber = formatNumber(totalCost);
+  quantityOfGoodsValueCalculate(totalCostToNumber);
 };
-calculateCost();
+calculateFinalCost();
+
+// Удаляем товары из козины
 const goodsDelete = target => {
-  let card = target.closest('.card');
-  let cardContent = card.querySelector('.card__content');
-  let cardContentClone = cardContent.cloneNode(true);
+  const card = target.closest('.card'),
+    cardContent = card.querySelector('.card__content'),
+    cardContentClone = cardContent.cloneNode(true),
+    description = card.querySelector('.card__title').textContent;
   fragment.appendChild(cardContentClone);
-  let description = card.querySelector('.card__title').textContent;
   card.querySelector('.card__content').remove();
   card.classList.add('delete-dialog');
   card.removeAttribute('data-card');
-  let newHtml = `
+  const newHtml = `
     <div class="delete-dialog__content">
       <p class="delete-dialog__text">
         Товар <span>${description}</span> был удален из корзины.
@@ -146,10 +156,12 @@ const goodsDelete = target => {
     </div>
   `;
   card.insertAdjacentHTML('afterbegin', newHtml);
-  valueCatcher();
-  calculateCost();
+  quantityOfGoodsValueCalculate();
+  calculateFinalCost();
   plugSwitcher();
 };
+
+// Считаем стоимость отдельных товаров и управляем счетчиками
 const calculateSeparateItems = (item, action) => {
   let input = item.querySelector('.counter__number');
   let icr = item.querySelector('.increase');
@@ -165,8 +177,8 @@ const calculateSeparateItems = (item, action) => {
       if (Number(input.textContent) === 1) {
         dec.setAttribute('disabled', true);
       }
-      calculateCost();
-      valueCatcher();
+      calculateFinalCost();
+      quantityOfGoodsValueCalculate();
       break;
     case ACTIONS.PLUS:
       if (Number(input.textContent) < 3) {
@@ -178,16 +190,18 @@ const calculateSeparateItems = (item, action) => {
       if (Number(input.textContent) > 1) {
         dec.removeAttribute('disabled');
       }
-      calculateCost();
-      valueCatcher();
+      calculateFinalCost();
+      quantityOfGoodsValueCalculate();
       break;
   }
 };
+
+// Ограничиваем минимальное колличество товара
 const goodsMinValueLimiter = () => {
-  let cards = document.querySelectorAll('[data-card]');
+  const cards = document.querySelectorAll('[data-card]');
   cards.forEach(item => {
-    let input = item.querySelector('.counter__number');
-    let dec = item.querySelector('.decrease');
+    const input = item.querySelector('.counter__number'),
+      dec = item.querySelector('.decrease');
     if (Number(input.textContent) === 1) {
       dec.setAttribute('disabled', true);
     } else {
@@ -196,19 +210,19 @@ const goodsMinValueLimiter = () => {
   });
 };
 goodsMinValueLimiter();
+
+// События корзины
 goodsList.addEventListener('click', e => {
   let target = e.target;
   if (target.classList.contains('decrease')) {
-    let card = target.closest('[data-card]');
+    const card = target.closest('[data-card]');
     (0,_functions_debouce__WEBPACK_IMPORTED_MODULE_0__.debounce)(calculateSeparateItems(card, ACTIONS.MINUS), 100);
   }
   if (target.classList.contains('increase')) {
-    let card = target.closest('[data-card]');
+    const card = target.closest('[data-card]');
     (0,_functions_debouce__WEBPACK_IMPORTED_MODULE_0__.debounce)(calculateSeparateItems(card, ACTIONS.PLUS), 100);
   }
-  if (target.classList.contains('card__close')) {
-    goodsDelete(target);
-  }
+  target.classList.contains('card__close') && goodsDelete(target);
 });
 
 /***/ }),
@@ -235,6 +249,8 @@ smoothscroll_polyfill__WEBPACK_IMPORTED_MODULE_3___default().polyfill();
 (function () {
   const formTextareaComment = document.querySelector('.form__textarea--comment');
   const sumbolCounter = document.querySelector('.comment__symbol-counter');
+
+  // Отслеживаем колличество символов в поле коментариев
   const onInput = e => {
     let length = e.target.value.length;
     if (length >= 0) {
@@ -247,6 +263,8 @@ smoothscroll_polyfill__WEBPACK_IMPORTED_MODULE_3___default().polyfill();
     }
   };
   formTextareaComment.addEventListener('input', onInput);
+
+  // Валидация
   const formValidator = () => {
     const red = document.querySelector(':root').style.getPropertyValue('--red');
     const green = document.querySelector(':root').style.getPropertyValue('--green');
@@ -353,8 +371,8 @@ gsap__WEBPACK_IMPORTED_MODULE_3__["default"].registerPlugin(gsap_CustomEase__WEB
 gsap_CustomEase__WEBPACK_IMPORTED_MODULE_4__.CustomEase.create('cubic', '.2, .6, 0, 1');
 
 // Таймлайны
-let burgerAnimation = gsap__WEBPACK_IMPORTED_MODULE_3__["default"].timeline();
-let menuAnimation = gsap__WEBPACK_IMPORTED_MODULE_3__["default"].timeline();
+const burgerAnimation = gsap__WEBPACK_IMPORTED_MODULE_3__["default"].timeline();
+const menuAnimation = gsap__WEBPACK_IMPORTED_MODULE_3__["default"].timeline();
 (function () {
   const header = document.querySelector('.header'),
     burger = document.querySelector('[data-burger]'),
@@ -373,6 +391,7 @@ let menuAnimation = gsap__WEBPACK_IMPORTED_MODULE_3__["default"].timeline();
   headroom.init();
 
   // Логика меню
+
   // Входная анимация меню
   const menuInAnimation = () => {
     burgerAnimation.to(bottomLine, {
@@ -456,6 +475,7 @@ let menuAnimation = gsap__WEBPACK_IMPORTED_MODULE_3__["default"].timeline();
       width: 32
     });
   };
+
   // Обработчик события
   const burgerBtnClick = () => {
     burger.classList.toggle('burger--active');
@@ -472,7 +492,8 @@ let menuAnimation = gsap__WEBPACK_IMPORTED_MODULE_3__["default"].timeline();
       (0,scroll_lock__WEBPACK_IMPORTED_MODULE_1__.enablePageScroll)();
     }
   };
-  burger.addEventListener('click', (0,_functions_debouce__WEBPACK_IMPORTED_MODULE_2__.debounce)(burgerBtnClick, 100));
+  const burgerBtnClickDebounced = (0,_functions_debouce__WEBPACK_IMPORTED_MODULE_2__.debounce)(burgerBtnClick, 100);
+  burger.addEventListener('click', burgerBtnClickDebounced);
 })();
 
 /***/ }),
@@ -486,7 +507,9 @@ let menuAnimation = gsap__WEBPACK_IMPORTED_MODULE_3__["default"].timeline();
 (function () {
   // Yandex & DaData
   const token = "29e80efd31d998cef429cad2ce20f8d52eded84a";
-  const geolocate = (lat, long) => {
+
+  // Получаем подсказки DaData по координатам с карты
+  const suggestionsOnCoords = (lat, long) => {
     const url = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/geolocate/address";
     const addressField = document.querySelector('#address');
     let query = {
@@ -504,61 +527,39 @@ let menuAnimation = gsap__WEBPACK_IMPORTED_MODULE_3__["default"].timeline();
       body: JSON.stringify(query)
     };
     if (lat && long) {
-      fetch(url, options).then(response => response.json()).then(result => {
-        addressField.value = result.suggestions[0].value;
-      }).catch(error => console.log("error", error));
+      const loadSuggestions = async () => {
+        try {
+          const response = await fetch(url, options);
+          const data = await response.json();
+          addressField.value = data.suggestions[0].value;
+        } catch (e) {
+          console.log(e);
+        }
+      };
+      loadSuggestions();
     }
   };
-  geolocate();
-  function init() {
-    let center = [59.994864, 30.399070];
-    let map = new ymaps.Map('map', {
-      center: center,
-      zoom: 13
-    });
-    let mapMobile = new ymaps.Map('map-mobile', {
-      center: center,
-      zoom: 13
-    });
-    let placemark = new ymaps.Placemark(center, {}, {
-      iconLayout: 'default#image',
-      iconImageHref: 'img/custom-pin.svg',
-      iconImageSize: [27, 40],
-      iconImageOffset: [-10, -40]
-    });
-    let placemarkMobile = new ymaps.Placemark(center, {}, {
-      iconLayout: 'default#image',
-      iconImageHref: 'img/custom-pin.svg',
-      iconImageSize: [27, 40],
-      iconImageOffset: [-10, -40]
-    });
-    map.controls.remove('geolocationControl'); // удаляем геолокацию
-    map.controls.remove('searchControl'); // удаляем поиск
-    map.controls.remove('trafficControl'); // удаляем контроль трафика
-    map.controls.remove('typeSelector'); // удаляем тип
-    map.controls.remove('fullscreenControl'); // удаляем кнопку перехода в полноэкранный режим
-    map.controls.remove('zoomControl'); // удаляем контрол зуммирования
-    map.controls.remove('rulerControl'); // удаляем контрол правил
-    // Изменим размеры контейнера карты
-    map.container.getElement().style.width = '100%';
-    // Инициируем пересчет размеров
-    map.container.fitToViewport();
-    map.geoObjects.add(placemark);
-    mapMobile.controls.remove('geolocationControl'); // удаляем геолокацию
-    mapMobile.controls.remove('searchControl'); // удаляем поиск
-    mapMobile.controls.remove('trafficControl'); // удаляем контроль трафика
-    mapMobile.controls.remove('typeSelector'); // удаляем тип
-    mapMobile.controls.remove('fullscreenControl'); // удаляем кнопку перехода в полноэкранный режим
-    mapMobile.controls.remove('zoomControl'); // удаляем контрол зуммирования
-    mapMobile.controls.remove('rulerControl'); // удаляем контрол правил
-    // Изменим размеры контейнера карты
-    mapMobile.container.getElement().style.width = '100%';
-    // Инициируем пересчет размеров
-    mapMobile.container.fitToViewport();
-    mapMobile.geoObjects.add(placemarkMobile);
 
-    // Определяем адрес по координатам для обратного геокодирования
-    function getAddress(coords) {
+  // Инициализируем карту
+  const mapInit = () => {
+    const center = [59.994864, 30.399070];
+    const mapOptions = {
+      center: center,
+      zoom: 13
+    };
+    const placemarkOptions = {
+      iconLayout: 'default#image',
+      iconImageHref: 'img/custom-pin.svg',
+      iconImageSize: [27, 40],
+      iconImageOffset: [-10, -40]
+    };
+    const placemark = new ymaps.Placemark(center, {}, placemarkOptions);
+    const placemarkMobile = new ymaps.Placemark(center, {}, placemarkOptions);
+    const map = new ymaps.Map('map', mapOptions);
+    const mapMobile = new ymaps.Map('map-mobile', mapOptions);
+
+    // Получаем адрес по координатам с Яндекс Карты
+    const getAddress = coords => {
       placemark.properties.set('iconCaption', 'поиск...');
       ymaps.geocode(coords).then(function (res) {
         let firstGeoObject = res.geoObjects.get(0);
@@ -573,27 +574,59 @@ let menuAnimation = gsap__WEBPACK_IMPORTED_MODULE_3__["default"].timeline();
           balloonContent: firstGeoObject.getAddressLine()
         });
       });
-    }
-    function getCords(e) {
-      let coords = e.get('coords');
-      if (placemark && placemarkMobile) {
-        placemark.geometry.setCoordinates(coords);
-        placemarkMobile.geometry.setCoordinates(coords);
-      }
-      getAddress(coords);
-      geolocate(coords[0], coords[1]);
-    }
-    map.events.add('click', getCords);
-    mapMobile.events.add('click', getCords);
-
-    // Показываем точку на карте по адресу (прямое геокодирование)
-    const showOn = suggestion => {
-      var hasHouseCoords = suggestion.data.qc_geo === "0" || suggestion.data.qc_geo === "1";
-      if (hasHouseCoords) {
-        showHouse(suggestion);
-      }
     };
-    function showHouse(suggestion) {
+
+    // Получаем координаты по клику на Яндекс Карту
+    const getCords = e => {
+      let coords = e.get('coords');
+      placemark.geometry.setCoordinates(coords);
+      placemarkMobile.geometry.setCoordinates(coords);
+      getAddress(coords);
+      suggestionsOnCoords(coords[0], coords[1]);
+    };
+
+    // Настройки карты на десктопе
+    const mapDesctopGenerator = () => {
+      map.controls.remove('geolocationControl'); // удаляем геолокацию
+      map.controls.remove('searchControl'); // удаляем поиск
+      map.controls.remove('trafficControl'); // удаляем контроль трафика
+      map.controls.remove('typeSelector'); // удаляем тип
+      map.controls.remove('fullscreenControl'); // удаляем кнопку перехода в полноэкранный режим
+      map.controls.remove('zoomControl'); // удаляем контрол зуммирования
+      map.controls.remove('rulerControl'); // удаляем контрол правил
+      // Изменим размеры контейнера карты
+      map.container.getElement().style.width = '100%';
+      // Инициируем пересчет размеров
+      map.container.fitToViewport();
+      map.geoObjects.add(placemark);
+
+      // Событие клика по карте
+      map.events.add('click', getCords);
+    };
+    mapDesctopGenerator();
+
+    // Настройки карты на мобилке
+    const mapMobileGenerator = () => {
+      mapMobile.controls.remove('geolocationControl'); // удаляем геолокацию
+      mapMobile.controls.remove('searchControl'); // удаляем поиск
+      mapMobile.controls.remove('trafficControl'); // удаляем контроль трафика
+      mapMobile.controls.remove('typeSelector'); // удаляем тип
+      mapMobile.controls.remove('fullscreenControl'); // удаляем кнопку перехода в полноэкранный режим
+      mapMobile.controls.remove('zoomControl'); // удаляем контрол зуммирования
+      mapMobile.controls.remove('rulerControl'); // удаляем контрол правил
+      // Изменим размеры контейнера карты
+      mapMobile.container.getElement().style.width = '100%';
+      // Инициируем пересчет размеров
+      mapMobile.container.fitToViewport();
+      mapMobile.geoObjects.add(placemarkMobile);
+
+      // Событие клика по карте
+      mapMobile.events.add('click', getCords);
+    };
+    mapMobileGenerator();
+
+    // Показываем здание на карте
+    const showHouse = suggestion => {
       let lat = suggestion.data.geo_lat;
       let long = suggestion.data.geo_lon;
       let coords = [];
@@ -604,14 +637,22 @@ let menuAnimation = gsap__WEBPACK_IMPORTED_MODULE_3__["default"].timeline();
       map.setZoom(17);
       mapMobile.setCenter(coords);
       mapMobile.setZoom(17);
-    }
+    };
+
+    // Получаем координаты адреса подзказки DaData
+    const showOn = suggestion => {
+      const hasHouseCoords = suggestion.data.qc_geo === "0" || suggestion.data.qc_geo === "1";
+      hasHouseCoords && showHouse(suggestion);
+    };
+
+    // Инициализация DaData
     $("#address").suggestions({
       token: token,
       type: "ADDRESS",
       onSelect: showOn
     });
-  }
-  ymaps.ready(init);
+  };
+  ymaps.ready(mapInit);
 })();
 
 /***/ }),
@@ -627,9 +668,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _functions_debouce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../functions/debouce */ "./src/js/functions/debouce.js");
 
 (function () {
-  // Логика кнопки скрола вверх
-  const footer = document.querySelector('.footer');
-  const scrollUp = document.querySelector('.scroll-up');
+  const footer = document.querySelector('.footer'),
+    scrollUp = document.querySelector('.scroll-up');
+
+  // Отслеживание пересечения footer
   const scrollUpObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -642,7 +684,9 @@ __webpack_require__.r(__webpack_exports__);
     threshold: 0.9
   });
   scrollUpObserver.observe(footer);
-  const upper = () => {
+
+  // Событие
+  const scrollUpBtnClick = () => {
     scrollUp.classList.remove('scroll-up--active');
     window.scrollTo({
       top: 0,
@@ -650,7 +694,8 @@ __webpack_require__.r(__webpack_exports__);
       behavior: 'smooth'
     });
   };
-  scrollUp.addEventListener('click', (0,_functions_debouce__WEBPACK_IMPORTED_MODULE_0__.debounce)(upper, 200));
+  const scrollUpBtnClickDebounced = (0,_functions_debouce__WEBPACK_IMPORTED_MODULE_0__.debounce)(scrollUpBtnClick, 200);
+  scrollUp.addEventListener('click', scrollUpBtnClickDebounced);
 })();
 
 /***/ }),
@@ -670,10 +715,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 (function () {
-  const footerForm = document.querySelector('#subscribe');
-  const input = document.querySelector('.footer-form__input');
-  const red = document.querySelector(':root').style.getPropertyValue('--red');
-  const green = document.querySelector(':root').style.getPropertyValue('--green');
+  const footerForm = document.querySelector('#subscribe'),
+    input = document.querySelector('.footer-form__input'),
+    red = document.querySelector(':root').style.getPropertyValue('--red'),
+    green = document.querySelector(':root').style.getPropertyValue('--green');
+
+  // Валидация формы подписки
   const footerFormValidator = () => {
     const validation = new just_validate__WEBPACK_IMPORTED_MODULE_0__["default"](footerForm, {
       errorFieldCssClass: 'is-input-invalid',
@@ -703,9 +750,10 @@ __webpack_require__.r(__webpack_exports__);
       (0,_functions_modal_generator__WEBPACK_IMPORTED_MODULE_1__.modalGenerator)(footerForm);
     }).refresh();
   };
-  const inputValueСatcher = e => {
+
+  // Отслеживание количества введенных символов
+  const inputValueCatcher = e => {
     let value = e.target.value.trim();
-    console.log(value);
     let submit = document.querySelector('.footer-form__submit');
     if (value) {
       footerFormValidator();
@@ -714,8 +762,10 @@ __webpack_require__.r(__webpack_exports__);
       submit.disabled = true;
     }
   };
-  const inputDebounced = (0,_functions_debouce__WEBPACK_IMPORTED_MODULE_2__.debounce)(inputValueСatcher, 200);
-  input.addEventListener('input', inputDebounced);
+
+  // Событие
+  const inputValueCatcherDebounced = (0,_functions_debouce__WEBPACK_IMPORTED_MODULE_2__.debounce)(inputValueCatcher, 200);
+  input.addEventListener('input', inputValueCatcherDebounced);
 })();
 
 /***/ }),
