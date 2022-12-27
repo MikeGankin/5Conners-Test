@@ -271,6 +271,7 @@ smoothscroll_polyfill__WEBPACK_IMPORTED_MODULE_3___default().polyfill();
     const form = document.querySelector('#form');
     const tel = document.querySelector('input[type=tel]');
     const inputMask = new (inputmask__WEBPACK_IMPORTED_MODULE_1___default())('+7 (999) 999-99-99');
+    const customRegexp = /^\s*$/; //проверяем пустая ли сторока
     inputMask.mask(tel);
     const validation = new just_validate__WEBPACK_IMPORTED_MODULE_0__["default"](form, {
       errorFieldCssClass: 'is-input-invalid',
@@ -278,7 +279,6 @@ smoothscroll_polyfill__WEBPACK_IMPORTED_MODULE_3___default().polyfill();
       errorLabelCssClass: 'is-label-invalid',
       successLabelCssClass: 'is-label-valid',
       focusInvalidField: true,
-      lockForm: true,
       validateBeforeSubmitting: true,
       errorLabelStyle: {
         color: red
@@ -745,27 +745,14 @@ __webpack_require__.r(__webpack_exports__);
     }]).onSuccess(e => {
       e.preventDefault();
       let formData = new FormData(footerForm);
-      console.log(formData);
+      for (let [key, value] of formData) {
+        console.log(`${key} : ${value}`);
+      }
       e.target.reset();
       (0,_functions_modal_generator__WEBPACK_IMPORTED_MODULE_1__.modalGenerator)(footerForm);
     }).refresh();
   };
-
-  // Отслеживание количества введенных символов
-  const inputValueCatcher = e => {
-    let value = e.target.value.trim();
-    let submit = document.querySelector('.footer-form__submit');
-    if (value) {
-      footerFormValidator();
-      submit.disabled = false;
-    } else {
-      submit.disabled = true;
-    }
-  };
-
-  // Событие
-  const inputValueCatcherDebounced = (0,_functions_debouce__WEBPACK_IMPORTED_MODULE_2__.debounce)(inputValueCatcher, 200);
-  input.addEventListener('input', inputValueCatcherDebounced);
+  footerFormValidator();
 })();
 
 /***/ }),
